@@ -2,11 +2,12 @@ import unittest
 from selenium import webdriver
 from dotenv import load_dotenv
 load_dotenv()
+import os
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import os
+
 import HtmlTestRunner
 
 from pages.page_login import Page_Login
