@@ -1,8 +1,9 @@
 import unittest
 from selenium import webdriver
 from dotenv import load_dotenv
-load_dotenv()
 import os
+from selenium.webdriver.firefox.options import Options
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
@@ -18,19 +19,33 @@ from pages.page_checkout_complete import Page_Checkout_Complete
 
 class SauceDemoTests(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls) -> None:
+        options = Options()
+        options.add_argument('--incognito')
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        cls.driver = webdriver.Firefox(options = options)
+        #cls.driver = webdriver.Chrome(options=options)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.driver.close()
+        cls.driver.quit()
+    
+    def setUp(self) -> None:
         self.driver = webdriver.Firefox() 
+        load_dotenv()
+        user = os.getenv('USER')
+        password = os.getenv('PASS')
         self.driver.maximize_window()
         self.driver.implicitly_wait(10)
-    
-    def tearDown(self):
-        self.driver.close()
-        self.driver.quit()
+        self.driver.get(os.getenv('BASE_URL'))
+        page_login = Page_Login(self.driver)
+        page_login.login(user,password)
     
 
     def test_order_items_by_price(self):
-        page_login = Page_Login(self.driver)
-        page_login.login("standard_user", "secret_sauce")
         driver = self.driver
         
         # Ordenar los elementos por precio (low to high)
