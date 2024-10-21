@@ -182,7 +182,3 @@ class SauceDemoTests(unittest.TestCase):
         page_checkout_complete = Page_Checkout_Complete(self.driver)
         message = page_checkout_complete.get_final_message()
         self.assertEqual('Thank you for your order!', message)
-
-    
-
-
