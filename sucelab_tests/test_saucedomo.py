@@ -2,8 +2,8 @@ import unittest
 from selenium import webdriver
 from dotenv import load_dotenv
 import os
-from selenium.webdriver.firefox.options import Options
-
+#from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
@@ -25,8 +25,8 @@ class SauceDemoTests(unittest.TestCase):
         options.add_argument('--incognito')
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
-        cls.driver = webdriver.Firefox(options = options)
-        #cls.driver = webdriver.Chrome(options=options)
+        cls.driver = webdriver.Chrome(options = options)
+        #cls.driver = webdriver.Firefox(options=options)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -77,8 +77,6 @@ class SauceDemoTests(unittest.TestCase):
         print("Los precios están correctamente ordenados de menor a mayor.")
 
     def test_add_items_to_cart_and_checkout(self):
-        page_login = Page_Login(self.driver)
-        page_login.login("standard_user", "secret_sauce")
         driver = self.driver
         # Esperar que se cargue la página de productos
         WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.CLASS_NAME, 'inventory_item')))
@@ -151,7 +149,15 @@ class SauceDemoTests(unittest.TestCase):
         # Ir al carrito
         driver.find_element(By.ID, "shopping_cart_container").click()
         
+        #Esperar a que aparesca el boton remove
+        driver.find_element(By.CLASS_NAME, "cart_button").click()# Esperar hasta que los botones de añadir al carrito sean visibles
+        WebDriverWait(driver, 10).until(
+          EC.presence_of_element_located((By.CLASS_NAME, "cart_button"))
+        )
         # Eliminar el articulo
+        driver.find_element(By.CLASS_NAME, "cart_button").click()
+        driver.find_element(By.CLASS_NAME, "cart_button").click()
+        driver.find_element(By.CLASS_NAME, "cart_button").click()
         driver.find_element(By.CLASS_NAME, "cart_button").click()
 
         # Verificar que no hay articulos
@@ -168,9 +174,13 @@ class SauceDemoTests(unittest.TestCase):
         cart_items = driver.find_elements(By.CLASS_NAME, "cart_item")
         self.assertEqual(len(cart_items), 2, "No se han añadido correctamente los artículos.")
 
+        #Esperar a que aparezca el campo "first_name"
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, "first-name"))
+        ) 
         # Completar la compra
         page_checkout = Page_Checkout(self.driver)
-        page_checkout.checkout('pepe','pepe','1111')
+        page_checkout.checkout('lolo','lolo','1133')
         page_checkout_II = Page_Checkout_II(self.driver)
         article = page_checkout_II.verify_element(0)
         self.assertEqual('Sauce Labs Onesie',article)
